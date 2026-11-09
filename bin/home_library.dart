@@ -1,7 +1,12 @@
 import 'package:home_library/book_analytics.dart';
+import 'package:home_library/book_grouping.dart';
 import 'package:home_library/book_parser.dart';
+import 'package:home_library/book_sorting.dart';
 import 'package:home_library/book_validator.dart';
 import 'package:home_library/sample_data.dart';
+
+/// Скільки книг показувати у списках після сортування.
+const topCount = 3;
 
 void main() {
   final today = DateTime.now();
@@ -36,4 +41,22 @@ void main() {
   print('Прочитано: ${readBooks(validBooks).length} з ${validBooks.length}');
   print('Поезія: ${titlesByGenre(validBooks, 'поезія').join(', ')}');
   print('Сторінок прочитано: ${totalPagesRead(validBooks)}');
+
+  print('--- Групування за жанром ---');
+  final groups = groupByGenre(validBooks);
+  for (final MapEntry(:key, :value) in statsByGenre(groups).entries) {
+    final average = value.averagePages.toStringAsFixed(1);
+    print('$key: ${value.count} шт., у середньому $average стор.');
+  }
+
+  print('--- Сортування ---');
+  final oldest = sortedByYear(validBooks)
+      .take(topCount)
+      .map((book) => '${book.title} (${book.year})');
+  print('Найстаріші: ${oldest.join(', ')}');
+  final thickest = sortedByPages(
+    validBooks,
+    ascending: false,
+  ).take(topCount).map((book) => '${book.title} (${book.pages})');
+  print('Найоб’ємніші: ${thickest.join(', ')}');
 }
