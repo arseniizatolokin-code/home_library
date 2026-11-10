@@ -20,7 +20,9 @@ String isoDate(DateTime date) {
 /// Ховає місяць і день у даті [text], залишаючи лише рік.
 ///
 /// Рядок, який не є датою формату `РРРР-ММ-ДД`, повертається без змін.
-String maskDate(String text) => text.replaceAllMapped(
-  _isoDate,
-  (match) => '${match.namedGroup('year')}-**-**',
-);
+String maskDate(String text) => text.replaceAllMapped(_isoDate, (match) {
+  // replaceAllMapped оголошує тип Match, але для RegExp повертає
+  // RegExpMatch, який єдиний має namedGroup.
+  final year = (match as RegExpMatch).namedGroup('year');
+  return '$year-**-**';
+});
