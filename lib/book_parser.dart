@@ -1,14 +1,13 @@
 /// Розбір рядків домашньої бібліотеки у записи.
 library;
 
+import 'book_text.dart';
+
 /// Роздільник полів у вхідному рядку.
 const fieldSeparator = ';';
 
 /// Очікувана кількість полів у рядку.
 const expectedFieldCount = 6;
-
-/// Довжина дати у форматі `РРРР-ММ-ДД`.
-const isoDateLength = 10;
 
 /// Книга домашньої бібліотеки.
 ///
@@ -31,10 +30,10 @@ typedef ParseResult = ({Book? book, String? error});
 /// [DateTime.tryParse] сам цього не гарантує: для `2025-13-45` він
 /// повертає зсунуту дату, тому результат звіряється з вихідним текстом.
 DateTime? parseStrictDate(String text) {
+  if (!isIsoDateFormat(text)) return null;
   final date = DateTime.tryParse(text);
   if (date == null) return null;
-  final normalized = date.toIso8601String().substring(0, isoDateLength);
-  return normalized == text ? date : null;
+  return isoDate(date) == text ? date : null;
 }
 
 /// Розбирає рядок [line] у запис [Book].
