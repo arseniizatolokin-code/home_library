@@ -15,6 +15,9 @@ const topCount = 3;
 /// Порогове значення сторінок для «товстих» книг.
 const thickBookPages = 300;
 
+/// Жанр, назви книг якого виводяться окремим рядком.
+const poetryGenre = 'поезія';
+
 void main() {
   final today = DateTime.now();
   final results = rawBooks.map(parseLine).toList();
@@ -46,7 +49,7 @@ void main() {
 
   print('--- Конвеєри ---');
   print('Прочитано: ${readBooks(validBooks).length} з ${validBooks.length}');
-  print('Поезія: ${titlesByGenre(validBooks, 'поезія').join(', ')}');
+  print('Поезія: ${titlesByGenre(validBooks, poetryGenre).join(', ')}');
   print('Сторінок прочитано: ${totalPagesRead(validBooks)}');
 
   print('--- Групування за жанром ---');
