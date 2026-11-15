@@ -26,3 +26,15 @@ String maskDate(String text) => text.replaceAllMapped(_isoDate, (match) {
   final year = (match as RegExpMatch).namedGroup('year');
   return '$year-**-**';
 });
+
+/// Розбирає дату [text] формату `РРРР-ММ-ДД`.
+///
+/// Повертає `null`, якщо формат неправильний або такої дати не існує.
+/// [DateTime.tryParse] сам цього не гарантує: для `2025-13-45` він
+/// повертає зсунуту дату, тому результат звіряється з вихідним текстом.
+DateTime? parseStrictDate(String text) {
+  if (!isIsoDateFormat(text)) return null;
+  final date = DateTime.tryParse(text);
+  if (date == null) return null;
+  return isoDate(date) == text ? date : null;
+}

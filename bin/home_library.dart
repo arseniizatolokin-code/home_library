@@ -103,4 +103,17 @@ void main() {
       '${latest.days} дн. тому',
     );
   }
+
+  print('--- Класи ---');
+  const manual = Book(
+    author: 'Автор',
+    title: 'Назва',
+    year: 2000,
+    pages: 100,
+    genre: 'жанр',
+  );
+  print(manual);
+  final first = Book.cached(rawBooks.first);
+  final second = Book.cached(rawBooks.first);
+  print('${first.label}; той самий об’єкт: ${identical(first, second)}');
 }
