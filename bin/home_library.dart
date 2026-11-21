@@ -7,6 +7,7 @@ import 'package:home_library/book_report.dart';
 import 'package:home_library/book_sorting.dart';
 import 'package:home_library/book_text.dart';
 import 'package:home_library/book_validator.dart';
+import 'package:home_library/hash_experiment.dart';
 import 'package:home_library/sample_data.dart';
 
 /// Скільки книг показувати у списках після сортування.
@@ -14,6 +15,9 @@ const topCount = 3;
 
 /// Порогове значення сторінок для «товстих» книг.
 const thickBookPages = 300;
+
+/// Кількість однакових об'єктів в експерименті без hashCode.
+const copies = 100;
 
 /// Жанр, назви книг якого виводяться окремим рядком.
 const poetryGenre = 'поезія';
@@ -60,9 +64,9 @@ void main() {
   }
 
   print('--- Сортування ---');
-  final oldest = sortedByYear(validBooks)
-      .take(topCount)
-      .map((book) => '${book.title} (${book.year})');
+  final oldest = sortedByYear(
+    validBooks,
+  ).take(topCount).map((book) => '${book.title} (${book.year})');
   print('Найстаріші: ${oldest.join(', ')}');
   final thickest = sortedByPages(
     validBooks,
@@ -116,4 +120,15 @@ void main() {
   final first = Book.cached(rawBooks.first);
   final second = Book.cached(rawBooks.first);
   print('${first.label}; той самий об’єкт: ${identical(first, second)}');
+
+  print('--- Рівність ---');
+  final a = Book.fromCsv(rawBooks.first);
+  final b = Book.fromCsv(rawBooks.first);
+  print('Рівні за ==: ${a == b}; той самий об’єкт: ${identical(a, b)}');
+  print('Set із двох рівних книг: ${{a, b}.length}');
+  print('contains з hashCode: ${{a}.contains(b)}');
+  final noHash = {for (var i = 0; i < copies; i++) BookEqOnly('Кобзар', 1840)};
+  print('Set зі $copies рівних об’єктів без hashCode: ${noHash.length}');
+  final probe = BookEqOnly('Кобзар', 1840);
+  print('contains без hashCode: ${noHash.contains(probe)}');
 }

@@ -21,31 +21,33 @@ typedef _Fields = ({
 
 /// Книга домашньої бібліотеки.
 ///
-/// Об'єкт незмінний: усі поля `final`.
-class Book {
-  /// Створює книгу із готових значень.
-  const Book({
-    required this.author,
-    required this.title,
-    required this.year,
-    required this.pages,
-    required this.genre,
-    this.readDate,
-  });
-
+/// Об'єкт незмінний: усі поля `final`. Поля оголошено в первинному
+/// конструкторі: автор, назва, рік видання, кількість сторінок, жанр
+/// і дата прочитання (`null`, якщо книгу ще не прочитано).
+// ignore: public_member_api_docs
+class const Book({
+  required final String author,
+  required final String title,
+  required final int year,
+  required final int pages,
+  required final String genre,
+  final DateTime? readDate,
+}) {
   /// Розбирає рядок формату `автор;назва;рік;сторінки;жанр;дата`.
   ///
   /// Порожня дата означає, що книгу ще не прочитано.
   /// Кидає [FormatException], якщо рядок не відповідає формату.
-  Book.fromCsv(String line) : this._fromFields(_parse(line));
-
-  Book._fromFields(_Fields fields)
-    : author = fields.author,
-      title = fields.title,
-      year = fields.year,
-      pages = fields.pages,
-      genre = fields.genre,
-      readDate = fields.readDate;
+  factory Book.fromCsv(String line) {
+    final fields = _parse(line);
+    return Book(
+      author: fields.author,
+      title: fields.title,
+      year: fields.year,
+      pages: fields.pages,
+      genre: fields.genre,
+      readDate: fields.readDate,
+    );
+  }
 
   /// Повертає вже створену книгу для того самого рядка [line].
   ///
@@ -55,24 +57,6 @@ class Book {
       _cache.putIfAbsent(line, () => Book.fromCsv(line));
 
   static final _cache = <String, Book>{};
-
-  /// Автор книги.
-  final String author;
-
-  /// Назва книги.
-  final String title;
-
-  /// Рік видання.
-  final int year;
-
-  /// Кількість сторінок.
-  final int pages;
-
-  /// Жанр.
-  final String genre;
-
-  /// Дата прочитання; `null`, якщо книгу ще не прочитано.
-  final DateTime? readDate;
 
   /// Чи прочитано книгу.
   bool get isRead => readDate != null;
@@ -121,6 +105,21 @@ class Book {
       readDate: readDate,
     );
   }
+
+  /// Дві книги рівні, якщо рівні всі їхні поля.
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Book &&
+          author == other.author &&
+          title == other.title &&
+          year == other.year &&
+          pages == other.pages &&
+          genre == other.genre &&
+          readDate == other.readDate;
+
+  @override
+  int get hashCode => Object.hash(author, title, year, pages, genre, readDate);
 
   @override
   String toString() => 'Book($author, «$title», $year)';
