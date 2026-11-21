@@ -77,11 +77,3 @@ int minutesToFinish(Edition edition, {required int pages}) => switch (edition) {
   EbookEdition() => pages * ebookMinutesPerPage,
   AudioEdition(:final minutes) => minutes,
 };
-/// Комікс (тимчасово, для експерименту).
-final class ComicEdition extends Edition {
-  /// Створює комікс.
-  const ComicEdition();
-
-  @override
-  String describe() => 'комікс';
-}
