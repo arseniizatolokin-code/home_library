@@ -7,6 +7,7 @@ import 'package:home_library/book_report.dart';
 import 'package:home_library/book_sorting.dart';
 import 'package:home_library/book_text.dart';
 import 'package:home_library/book_validator.dart';
+import 'package:home_library/edition.dart';
 import 'package:home_library/hash_experiment.dart';
 import 'package:home_library/sample_data.dart';
 
@@ -64,9 +65,9 @@ void main() {
   }
 
   print('--- Сортування ---');
-  final oldest = sortedByYear(
-    validBooks,
-  ).take(topCount).map((book) => '${book.title} (${book.year})');
+  final oldest = sortedByYear(validBooks)
+      .take(topCount)
+      .map((book) => '${book.title} (${book.year})');
   print('Найстаріші: ${oldest.join(', ')}');
   final thickest = sortedByPages(
     validBooks,
@@ -131,4 +132,12 @@ void main() {
   print('Set зі $copies рівних об’єктів без hashCode: ${noHash.length}');
   final probe = BookEqOnly('Кобзар', 1840);
   print('contains без hashCode: ${noHash.contains(probe)}');
+
+  print('--- Видання ---');
+  for (final book in validBooks) {
+    final edition = editionsByTitle[book.title];
+    if (edition == null) continue;
+    final minutes = minutesToFinish(edition, pages: book.pages);
+    print('«${book.title}»: ${edition.describe()}; $minutes хв');
+  }
 }
