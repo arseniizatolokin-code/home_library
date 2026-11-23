@@ -2,6 +2,7 @@
 library;
 
 import 'book_text.dart';
+import 'repository.dart';
 
 /// Роздільник полів у вхідному рядку.
 const fieldSeparator = ';';
@@ -32,7 +33,7 @@ class const Book({
   required final int pages,
   required final String genre,
   final DateTime? readDate,
-}) {
+}) implements Identifiable {
   /// Розбирає рядок формату `автор;назва;рік;сторінки;жанр;дата`.
   ///
   /// Порожня дата означає, що книгу ще не прочитано.
@@ -57,6 +58,10 @@ class const Book({
       _cache.putIfAbsent(line, () => Book.fromCsv(line));
 
   static final _cache = <String, Book>{};
+
+  /// Ідентифікатор для сховища: автор, назва та рік видання.
+  @override
+  String get id => '$author|$title|$year';
 
   /// Чи прочитано книгу.
   bool get isRead => readDate != null;

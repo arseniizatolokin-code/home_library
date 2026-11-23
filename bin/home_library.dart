@@ -1,6 +1,7 @@
 import 'package:home_library/book_analytics.dart';
 import 'package:home_library/book_closures.dart';
 import 'package:home_library/book_dates.dart';
+import 'package:home_library/book_extensions.dart';
 import 'package:home_library/book_grouping.dart';
 import 'package:home_library/book_parser.dart';
 import 'package:home_library/book_report.dart';
@@ -9,6 +10,7 @@ import 'package:home_library/book_text.dart';
 import 'package:home_library/book_validator.dart';
 import 'package:home_library/edition.dart';
 import 'package:home_library/hash_experiment.dart';
+import 'package:home_library/repository.dart';
 import 'package:home_library/sample_data.dart';
 
 /// Скільки книг показувати у списках після сортування.
@@ -16,6 +18,9 @@ const topCount = 3;
 
 /// Порогове значення сторінок для «товстих» книг.
 const thickBookPages = 300;
+
+/// Швидкість завантаження в мегабайтах за секунду.
+const downloadSpeedMbPerSecond = 2.0;
 
 /// Кількість однакових об'єктів в експерименті без hashCode.
 const copies = 100;
@@ -140,4 +145,29 @@ void main() {
     final minutes = minutesToFinish(edition, pages: book.pages);
     print('«${book.title}»: ${edition.describe()}; $minutes хв');
   }
+
+  print('--- Домішка ---');
+  for (final edition in editionsByTitle.values) {
+    if (edition case final Downloadable download) {
+      final seconds = download.downloadSeconds(
+        mbPerSecond: downloadSpeedMbPerSecond,
+      );
+      print('${download.downloadLabel}: $seconds с');
+    }
+  }
+
+  print('--- Розширення ---');
+  final authors = validBooks
+      .take(topCount)
+      .map((book) => book.author.shortAuthor);
+  print(authors.join(', '));
+
+  print('--- Сховище ---');
+  final repository = Repository<Book>();
+  validBooks.forEach(repository.add);
+  print('У сховищі: ${repository.length}');
+  final found = repository.findById(validBooks.first.id);
+  print('Знайдено: ${found?.label ?? 'немає'}');
+  final thick = repository.where((book) => book.pages > thickBookPages);
+  print('Книг понад $thickBookPages сторінок: ${thick.length}');
 }

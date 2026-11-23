@@ -10,16 +10,43 @@ const ebookMinutesPerPage = 3;
 /// Хвилин в одній годині.
 const minutesInHour = 60;
 
+/// Об'єкт, який уміє описати себе коротким рядком.
+abstract class Describable {
+  /// Створює описуваний об'єкт.
+  const Describable();
+
+  /// Короткий опис; кожен підтип реалізує його по-своєму.
+  String describe();
+}
+
 /// Видання, у якому книга зберігається.
 ///
 /// Клас запечатаний: усі підтипи оголошено в цьому файлі, тому
 /// компілятор знає їх повний перелік і перевіряє `switch` на вичерпність.
-sealed class Edition {
+sealed class Edition extends Describable {
   /// Створює видання.
   const Edition();
+}
 
-  /// Короткий опис видання; кожен підтип реалізує його по-своєму.
-  String describe();
+/// Домішка для цифрових видань: уміє оцінити тривалість завантаження.
+///
+/// Обмеження `on Describable` робить дві речі: дозволяє підмішувати домішку
+/// лише до підтипів [Describable] і відкриває доступ до їхніх членів,
+/// наприклад до [Describable.describe].
+///
+/// Обмеження поставлено на [Describable], а не на запечатаний [Edition]:
+/// домішка з `on Edition` сама стає підтипом [Edition], і `switch` за
+/// [Edition] вимагав би окремої гілки для неї.
+mixin Downloadable on Describable {
+  /// Розмір файлу в мегабайтах.
+  double get sizeMb;
+
+  /// Скільки секунд триватиме завантаження зі швидкістю [mbPerSecond].
+  int downloadSeconds({required double mbPerSecond}) =>
+      (sizeMb / mbPerSecond).ceil();
+
+  /// Підпис для списку завантажень; користується [describe] надкласу.
+  String get downloadLabel => 'Завантажити: ${describe()}';
 }
 
 /// Паперове видання.
@@ -35,11 +62,12 @@ final class PaperEdition extends Edition {
 }
 
 /// Електронне видання.
-final class EbookEdition extends Edition {
+final class EbookEdition extends Edition with Downloadable {
   /// Створює електронне видання розміром [sizeMb] мегабайтів.
   const EbookEdition({required this.sizeMb});
 
   /// Розмір файлу в мегабайтах.
+  @override
   final double sizeMb;
 
   @override
@@ -47,12 +75,16 @@ final class EbookEdition extends Edition {
 }
 
 /// Аудіокнига.
-final class AudioEdition extends Edition {
-  /// Створює аудіокнигу тривалістю [minutes] хвилин.
-  const AudioEdition({required this.minutes});
+final class AudioEdition extends Edition with Downloadable {
+  /// Створює аудіокнигу тривалістю [minutes] хвилин і розміром [sizeMb].
+  const AudioEdition({required this.minutes, required this.sizeMb});
 
   /// Тривалість запису в хвилинах.
   final int minutes;
+
+  /// Розмір файлу в мегабайтах.
+  @override
+  final double sizeMb;
 
   @override
   String describe() =>
@@ -64,7 +96,7 @@ final class AudioEdition extends Edition {
 const editionsByTitle = <String, Edition>{
   'Кобзар': PaperEdition(weightGrams: 450),
   'Лісова пісня': EbookEdition(sizeMb: 1.2),
-  'Тигролови': AudioEdition(minutes: 780),
+  'Тигролови': AudioEdition(minutes: 780, sizeMb: 540),
 };
 
 /// Скільки хвилин потрібно, щоб опанувати книгу у виданні [edition].
