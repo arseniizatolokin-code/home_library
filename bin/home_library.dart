@@ -10,6 +10,7 @@ import 'package:home_library/book_text.dart';
 import 'package:home_library/book_validator.dart';
 import 'package:home_library/edition.dart';
 import 'package:home_library/hash_experiment.dart';
+import 'package:home_library/reading_status.dart';
 import 'package:home_library/repository.dart';
 import 'package:home_library/sample_data.dart';
 
@@ -170,4 +171,14 @@ void main() {
   print('Знайдено: ${found?.label ?? 'немає'}');
   final thick = repository.where((book) => book.pages > thickBookPages);
   print('Книг понад $thickBookPages сторінок: ${thick.length}');
+
+  print('--- Стани читання ---');
+  for (final status in ReadingStatus.values) {
+    final count = validBooks
+        .where((book) => statusOf(book, today: today) == status)
+        .length;
+    print('${status.title}: $count');
+  }
+  final (:finished, :unfinished) = countFinished(validBooks, today: today);
+  print('Прочитано: $finished, не прочитано: $unfinished');
 }

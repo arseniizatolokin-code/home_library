@@ -131,6 +131,34 @@ analysis_options.yaml      правила аналізатора
 `prefer_final_in_for_each`, `avoid_positional_boolean_parameters`,
 `unnecessary_lambdas`.
 
+## Лабораторна робота 2: об'єктно-орієнтована модель
+
+| Файл | Що в ньому |
+|---|---|
+| `lib/book.dart` | незмінний клас `Book` (первинний конструктор), `Book.fromCsv`, фабрика `Book.cached`, `==` і `hashCode` |
+| `lib/edition.dart` | запечатаний `Edition` з трьома підтипами, домішка `Downloadable`, `switch` без `default` |
+| `lib/book_extensions.dart` | метод розширення `shortAuthor` на `String` |
+| `lib/repository.dart` | `Repository<T extends Identifiable>` |
+| `lib/reading_status.dart` | перелічення `ReadingStatus` з членами, `switch` з охоронцем `when`, запис у результаті |
+| `lib/hash_experiment.dart` | експеримент: `==` без `hashCode` |
+
+Рішення:
+
+- `Book` незмінний, щоб об'єкт не можна було зіпсувати після валідації; поля
+  `final` оголошено в первинному конструкторі (Dart 3.13).
+- Розбір рядка став конструктором `Book.fromCsv`, а кешування — фабрикою
+  `Book.cached`: генеративний конструктор не може повернути вже наявний об'єкт.
+- `Downloadable on Describable`, а не `on Edition`: домішка з `on Edition` сама
+  стала б підтипом запечатаного `Edition`, і `switch` вимагав би для неї гілки.
+  Успадкування не підходить: поведінка потрібна двом із трьох підтипів, тому
+  в `Edition` її покласти не можна (її отримало б і `PaperEdition`), а проміжний
+  клас закріпив би її в одній гілці запечатаної ієрархії; домішку можна
+  підмішати до будь-якого `Describable`.
+- `ReadingStatus` — перелічення, бо стан належить до закритого набору значень,
+  і кожне значення має підпис; `statusOf` використовує `switch` із `when`.
+- `!`, `late`, `dynamic` у цій роботі не використовуються.
+- Нових залежностей немає.
+
 ## Історія змін
 
 Робота виконувалась поетапно, по одному етапу на день:
@@ -141,3 +169,10 @@ analysis_options.yaml      правила аналізатора
 4. 10.11 — звіт, замикання, регулярний вираз, арифметика дат (і виправлення
    доступу до іменованої групи в `maskDate`).
 5. 11.11 — README, фінальна перевірка, мітка `lab1`.
+
+Лабораторна робота 2:
+
+1. 15.11 — незмінний `Book`, `Book.fromCsv`, фабрика `Book.cached`.
+2. 21.11 — первинний конструктор, `==` і `hashCode`, запечатаний `Edition`.
+3. 23.11 — домішка `Downloadable`, розширення `shortAuthor`, `Repository<T>`.
+4. 27.11 — перелічення `ReadingStatus`, чистка `pubspec.yaml` і `.gitignore`.

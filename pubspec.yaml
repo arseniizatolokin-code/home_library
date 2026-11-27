@@ -1,14 +1,10 @@
 name: home_library
-description: A sample command-line application.
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+description: Домашня бібліотека: облік книг, розбір CSV, перевірка записів і об'єктна модель.
+version: 2.0.0
+repository: https://github.com/arseniizatolokin-code/home_library
 
 environment:
   sdk: ^3.13.7
-
-# Add regular dependencies here.
-dependencies:
-  path: ^1.9.0
 
 dev_dependencies:
   lints: ^6.0.0
