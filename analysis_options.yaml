@@ -13,3 +13,5 @@ linter:
     - prefer_final_in_for_each
     - avoid_positional_boolean_parameters
     - unnecessary_lambdas
+    - unawaited_futures
+    - discarded_futures
